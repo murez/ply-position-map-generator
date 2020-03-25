@@ -19,7 +19,7 @@ k_inv = np.linalg.pinv(k)
 scalingFactor = 18000.0
 
 
-def generate_pointcloud(rgb_file, depth_file, ply_file):
+def generate_pointcloud(rgb_file, depth_file, ply_file, mat_file):
     """
     Generate a colored point cloud in PLY format from a color and a depth image.
 
@@ -34,7 +34,7 @@ def generate_pointcloud(rgb_file, depth_file, ply_file):
     rgb.paste(rgba, mask=rgba.split()[3])
     depth = Image.open(depth_file)
 
-    position_map = np.zeros((3,rgb.size[1]*rgb.size[0]), dtype=float)
+    position_map = np.zeros((3, rgb.size[1]*rgb.size[0]), dtype=float)
 
     if rgb.size != depth.size:
         raise Exception("Color and depth image do not have the same resolution.")
@@ -78,7 +78,7 @@ end_header
 %s
 ''' % (len(points), "".join(points)))
     file.close()
-    scio.savemat('pm10.mat', {'data': position_map})
+    scio.savemat(mat_file, {'data': position_map})
 
 
 if __name__ == '__main__':
@@ -89,6 +89,7 @@ if __name__ == '__main__':
     parser.add_argument('rgb_file', help='input color image (format: png)')
     parser.add_argument('depth_file', help='input depth image (format: png)')
     parser.add_argument('ply_file', help='output PLY file (format: ply)')
+    parser.add_argument('mat_file', help='output position map file (format: mat)')
     args = parser.parse_args()
 
-    generate_pointcloud(args.rgb_file, args.depth_file, args.ply_file)
+    generate_pointcloud(args.rgb_file, args.depth_file, args.ply_file, args.mat_file)
